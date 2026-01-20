@@ -19,11 +19,11 @@ body {
 }
 
 .container {
-    width: 360px;
-    background: #020617;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(34,197,94,0.25);
+    width: 400px;
+    background: #0f172a;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 0 40px rgba(34,197,94,0.3);
     animation: fadeIn 1.2s ease;
 }
 
@@ -40,30 +40,32 @@ h1 {
 
 .subtitle {
     text-align: center;
-    font-size: 14px;
+    font-size: 16px;
     color: #cbd5e1;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 label {
-    font-size: 13px;
+    font-size: 14px;
     margin-bottom: 5px;
     display: block;
     color: #94a3b8;
+    transition: 0.3s;
 }
 
 input, select, button {
     width: 100%;
-    padding: 11px;
-    margin-bottom: 15px;
-    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 18px;
+    border-radius: 12px;
     border: none;
     outline: none;
-    font-size: 14px;
+    font-size: 16px;
+    transition: all 0.3s ease;
 }
 
 input, select {
-    background: #0f172a;
+    background: #1e293b;
     color: white;
 }
 
@@ -71,18 +73,22 @@ input::placeholder {
     color: #64748b;
 }
 
+input:focus, select:focus {
+    box-shadow: 0 0 12px #22c55e;
+    transform: scale(1.02);
+}
+
 button {
     background: #22c55e;
     color: black;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 button:hover {
     background: #16a34a;
-    transform: scale(1.03);
+    transform: scale(1.05);
 }
 
 .success-message {
@@ -91,6 +97,21 @@ button:hover {
     color: #22c55e;
     font-weight: bold;
     margin-top: 15px;
+    animation: popIn 0.8s ease;
+}
+
+.payment-message {
+    display: none;
+    color: #facc15;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 12px;
+    animation: popIn 0.8s ease;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.8);}
+    to { opacity: 1; transform: scale(1);}
 }
 </style>
 </head>
@@ -128,6 +149,9 @@ button:hover {
     <div class="success-message" id="successMessage">
         تم تسجيل الحجز بنجاح! ✅
     </div>
+    <div class="payment-message" id="paymentMessage">
+        برجاء دفع 100 جنيه لمحمد سامح مقدماً قبل البدء
+    </div>
 </div>
 
 <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
@@ -138,6 +162,7 @@ button:hover {
 
 const form = document.getElementById('bookingForm');
 const successMessage = document.getElementById('successMessage');
+const paymentMessage = document.getElementById('paymentMessage');
 
 form.addEventListener('submit', function(event) {
     event.preventDefault(); // يمنع إعادة تحميل الصفحة
@@ -145,6 +170,7 @@ form.addEventListener('submit', function(event) {
     emailjs.sendForm('service_dsxhs5v', 'template_ul985hd', form)
         .then(function() {
             successMessage.style.display = 'block';
+            paymentMessage.style.display = 'block';
             form.reset();
         }, function(error) {
             alert('حصل خطأ في إرسال الحجز، حاول مرة أخرى.');

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>متابعة حالة الحجز</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+<h1>متابعة حالة الحجز</h1>
+<input type="number" id="bookingId" placeholder="أدخل رقم الحجز" required>
+<input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+<button id="trackBtn">عرض الحالة</button>
+<div id="result" class="result" style="display:none;"></div>
+
+<a href="index.html">العودة لصفحة الحجز</a>
+</div>
+
+<script>
+const trackBtn = document.getElementById('trackBtn');
+trackBtn.addEventListener('click', ()=>{
+    const id = parseInt(document.getElementById('bookingId').value);
+    const email = document.getElementById('email').value;
+    let bookings = JSON.parse(localStorage.getItem('bookings')||'[]');
+    let found = bookings.find(b=>b.id===id && b.email===email);
+    const resultDiv = document.getElementById('result');
+    if(found){
+        resultDiv.style.display='block';
+        resultDiv.textContent='حالة حجزك: '+found.status;
+    }else{
+        resultDiv.style.display='block';
+        resultDiv.textContent='لا يوجد حجز مطابق لبياناتك';
+    }
+});
+</script>
+
+</body>
+</html>

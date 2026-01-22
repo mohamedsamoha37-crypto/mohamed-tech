@@ -6,9 +6,9 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
 body{height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#020617,#0f172a);color:white;}
-.container{width:450px;background:#020617;padding:40px;border-radius:20px;box-shadow:0 0 50px rgba(34,197,94,0.3);animation:fadeIn 1s ease;}
+.container{width:450px;background:#020617;padding:40px;border-radius:20px;box-shadow:0 0 50px rgba(34,197,94,0.3);animation:fadeIn 1s ease;display:flex;flex-direction:column;align-items:center;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(40px);} to{opacity:1;transform:translateY(0);}}
-h1{text-align:center;color:#22c55e;font-size:30px;margin-bottom:10px;}
+h1{text-align:center;color:#22c55e;font-size:32px;margin-bottom:10px;}
 .subtitle{text-align:center;font-size:15px;color:#cbd5e1;margin-bottom:25px;}
 label{font-size:14px;margin-bottom:5px;display:block;color:#94a3b8;}
 input,select,button{width:100%;padding:14px;margin-bottom:15px;border-radius:12px;border:none;outline:none;font-size:15px;transition:0.3s;}
@@ -23,8 +23,6 @@ button:hover{background:#16a34a;transform:scale(1.03);}
 #popupBox p{margin:0 0 14px;color:#e2e8f0;line-height:1.6;}
 #popupBtn{width:100%;padding:12px;border:none;border-radius:14px;background:linear-gradient(90deg,#22c55e,#16a34a);font-weight:800;cursor:pointer;}
 @keyframes pop{from{transform:scale(.95);opacity:.3} to{transform:scale(1);opacity:1}}
-.flex-group{display:flex;gap:10px;}
-.flex-group input,.flex-group select{flex:1;}
 a{color:#22c55e;text-align:center;display:block;margin-top:15px;font-weight:bold;text-decoration:none;}
 </style>
 </head>
@@ -41,27 +39,15 @@ a{color:#22c55e;text-align:center;display:block;margin-top:15px;font-weight:bold
   <label>اسم المدرسة</label>
   <input type="text" name="school_name" placeholder="اسم المدرسة" required>
 
-  <div class="flex-group">
-    <div>
-      <label>الفصل</label>
-      <select name="class" required>
-        <option value="">اختر الفصل</option>
-        <option>1/1</option>
-        <option>1/2</option>
-        <option>1/3</option>
-        <option>1/4</option>
-        <option>1/5</option>
-      </select>
-    </div>
-    <div>
-      <label>سرعة الحجز</label>
-      <select name="booking_speed" id="bookingSpeed" required>
-        <option value="">اختر السرعة</option>
-        <option value="normal">عادي (100 جنيه)</option>
-        <option value="urgent">مستعجل (120 جنيه)</option>
-      </select>
-    </div>
-  </div>
+  <label>الفصل</label>
+  <select name="class" required>
+    <option value="">اختر الفصل</option>
+    <option>1/1</option>
+    <option>1/2</option>
+    <option>1/3</option>
+    <option>1/4</option>
+    <option>1/5</option>
+  </select>
 
   <label>اسم المنصة</label>
   <input type="text" name="platform_name" placeholder="اسم المنصة" required>
@@ -83,6 +69,13 @@ a{color:#22c55e;text-align:center;display:block;margin-top:15px;font-weight:bold
 
   <label>البريد الإلكتروني</label>
   <input type="email" name="email" placeholder="example@gmail.com" required>
+
+  <label>سرعة الحجز</label>
+  <select name="booking_speed" id="bookingSpeed" required>
+    <option value="">اختر السرعة</option>
+    <option value="normal">عادي (100 جنيه)</option>
+    <option value="urgent">مستعجل (120 جنيه)</option>
+  </select>
 
   <button type="submit">تأكيد الحجز</button>
 </form>
@@ -116,8 +109,7 @@ function showPopup(title,text){popupTitle.textContent=title;popupText.textConten
 popupBtn.addEventListener('click',()=>{popupOverlay.style.display='none';});
 
 paymentMethod.addEventListener('change',()=>{
-  if(paymentMethod.value==='vodafone'){vodafoneDiv.style.display='block';}
-  else{vodafoneDiv.style.display='none';}
+  vodafoneDiv.style.display=paymentMethod.value==='vodafone'?'block':'none';
 });
 
 form.addEventListener('submit',function(event){
@@ -142,146 +134,6 @@ form.addEventListener('submit',function(event){
       form.reset();
       vodafoneDiv.style.display='none';
     },function(error){alert('حصل خطأ في إرسال الحجز، حاول مرة أخرى.');console.log(error);});
-});
-</script>
-
-</body>
-</html>  cursor:pointer;
-  transition:0.3s;
-}
-button:hover { background:#16a34a; transform:scale(1.03); }
-a { color:#22c55e; text-align:center; display:block; margin-top:15px; font-weight:bold; text-decoration:none; }
-#popupOverlay {
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.55);
-  display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(6px);
-  z-index:9999;
-  display:none;
-}
-#popupBox {
-  width:360px; max-width:90%;
-  background:rgba(15,23,42,.95);
-  border:1px solid rgba(148,163,184,.2);
-  border-radius:18px;
-  padding:22px 18px;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
-  text-align:center;
-  animation:pop .25s ease;
-}
-#popupBox h2{ margin:0 0 8px; color:#22c55e; font-size:18px; }
-#popupBox p{ margin:0 0 14px; color:#e2e8f0; line-height:1.6; }
-#popupBtn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(90deg,#22c55e,#16a34a);
-  font-weight:800;
-  cursor:pointer;
-}
-@keyframes pop { from{transform:scale(.95);opacity:.3} to{transform:scale(1);opacity:1} }
-</style>
-</head>
-<body>
-
-<div class="container">
-  <h1>Mohamed Tech</h1>
-  <div class="subtitle">نظام حجز لحل منصة البرمجة</div>
-
-  <form id="bookingForm">
-    <label>الاسم الرباعي</label>
-    <input type="text" name="full_name" placeholder="مثال: محمد أحمد علي حسن" required>
-
-    <label>الفصل</label>
-    <select name="class" required>
-      <option value="">اختر الفصل</option>
-      <option>1/1</option>
-      <option>1/2</option>
-      <option>1/3</option>
-      <option>1/4</option>
-      <option>1/5</option>
-    </select>
-
-    <label>اسم المنصة</label>
-    <input type="text" name="platform_name" placeholder="اسم المنصة" required>
-
-    <label>كود المنصة</label>
-    <input type="text" name="platform_code" placeholder="اكتب الكود هنا" required>
-
-    <label>طريقة الدفع</label>
-    <select name="payment_method" id="paymentMethod" required>
-      <option value="">اختر طريقة الدفع</option>
-      <option value="vodafone">Vodafone Cash</option>
-      <option value="cash">Cash</option>
-    </select>
-
-    <label>حالة الحجز</label>
-    <select name="booking_speed" id="bookingSpeed" required>
-      <option value="">اختر السرعة</option>
-      <option value="normal">عادي (100 جنيه)</option>
-      <option value="urgent">مستعجل (120 جنيه)</option>
-    </select>
-
-    <label>البريد الإلكتروني</label>
-    <input type="email" name="email" placeholder="example@gmail.com" required>
-
-    <button type="submit">تأكيد الحجز</button>
-  </form>
-
-  <a href="track.html">متابعة حالة الحجز</a>
-</div>
-
-<div id="popupOverlay">
-  <div id="popupBox">
-    <h2 id="popupTitle"></h2>
-    <p id="popupText"></p>
-    <button id="popupBtn">تمام</button>
-  </div>
-</div>
-
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script>
-(function(){ emailjs.init('QWrTiK1BOSDjZaijS'); })();
-
-const form = document.getElementById('bookingForm');
-const popupOverlay = document.getElementById('popupOverlay');
-const popupTitle = document.getElementById('popupTitle');
-const popupText = document.getElementById('popupText');
-const popupBtn = document.getElementById('popupBtn');
-
-let lastId = localStorage.getItem('lastBookingId') || 20;
-
-function showPopup(title, text){
-  popupTitle.textContent = title;
-  popupText.textContent = text;
-  popupOverlay.style.display = 'flex';
-}
-popupBtn.addEventListener('click',()=>{popupOverlay.style.display='none';});
-
-form.addEventListener('submit',function(event){
-  event.preventDefault();
-  const paymentMethod=document.getElementById('paymentMethod').value;
-  const bookingSpeed=document.getElementById('bookingSpeed').value;
-  const email=form.email.value;
-  if(!paymentMethod||!bookingSpeed){alert('اختر طريقة الدفع وسرعة الحجز أولاً');return;}
-
-  lastId=parseInt(lastId)+1;
-  localStorage.setItem('lastBookingId',lastId);
-
-  emailjs.sendForm('service_dsxhs5v','template_ul985hd',form)
-    .then(function(){
-      let msg='';
-      if(paymentMethod==='vodafone'){msg='سنبدأ في حل منصتك في أقرب وقت. رقم حجزك: '+lastId;}
-      else{msg='برجاء التوجه لمحمد سامح ودفع '+(bookingSpeed==='urgent'?'120':'100')+' جنيه كاش. رقم حجزك: '+lastId;}
-      showPopup('تم تسجيل الحجز ✅',msg);
-
-      let bookings=JSON.parse(localStorage.getItem('bookings')||'[]');
-      bookings.push({id:lastId,email:email,status:'في الانتظار'});
-      localStorage.setItem('bookings',JSON.stringify(bookings));
-
-      form.reset();
-    },function(error){alert('حصل خطأ في إرسال الحجز، حاول مرة أخرى.'); console.log(error);});
 });
 </script>
 

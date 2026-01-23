@@ -3,101 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تتبع حجزك | Samo Solutions</title>
+    <title>تتبع الحالة | Samo Solutions</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --primary: #22c55e; --bg: #020617; --card: #0f172a; --text: #ffffff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        .track-card { width: 100%; max-width: 450px; background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 15px 35px rgba(0,0,0,0.5); text-align: center; }
-        
-        /* نظام التبديل (Tabs) */
-        .search-tabs { display: flex; background: #1e293b; border-radius: 12px; margin-bottom: 20px; padding: 5px; }
-        .tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: bold; color: #94a3b8; }
-        .tab.active { background: var(--primary); color: #000; }
+        :root {
+            --primary: #22c55e;
+            --bg: #020617;
+            --card: #0f172a;
+            --accent: #3b82f6;
+        }
 
-        input { width: 100%; padding: 14px; background: #000; border: 1px solid #334155; border-radius: 12px; color: var(--primary); margin-bottom: 15px; outline: none; text-align: center; font-size: 18px; font-weight: bold; }
-        
-        .btn-search { width: 100%; padding: 15px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        /* منطقة النتيجة */
-        #resultArea { margin-top: 25px; display: none; animation: slideUp 0.5s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
 
-        .status-badge { display: inline-block; padding: 8px 20px; border-radius: 50px; font-size: 14px; font-weight: bold; margin-top: 10px; }
-        .pending { background: rgba(234, 179, 8, 0.1); color: #eab308; border: 1px solid #eab308; }
-        .done { background: rgba(34, 197, 94, 0.1); color: var(--primary); border: 1px solid var(--primary); }
+        body {
+            background: var(--bg);
+            color: white;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .back-link { margin-top: 25px; display: block; color: #64748b; text-decoration: none; font-size: 13px; }
-        .back-link:hover { color: var(--primary); }
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card);
+            padding: 35px;
+            border-radius: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .tab-switcher {
+            display: flex;
+            background: #1e293b;
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #94a3b8;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #000;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: var(--primary);
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        .search-trigger {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* بطاقة النتيجة */
+        #dataDisplay {
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        .info-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: right;
+            border-right: 5px solid var(--primary);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+        }
+
+        .info-label { color: #94a3b8; font-size: 13px; }
+        .info-val { color: white; font-weight: bold; }
+
+        .status-pill {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } }
+
+        .back-home {
+            margin-top: 30px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="track-card">
-        <h2 style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-search-location"></i> تتبع طلبك</h2>
+    <div class="search-container">
+        <h2 style="margin-bottom: 10px;">تتبع الحجز <i class="fas fa-satellite"></i></h2>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:25px;">ابحث بالبيانات اللي سجلت بيها</p>
+
+        <div class="tab-switcher">
+            <div id="t1" class="tab-btn active" onclick="setMode('id')">رقم الدور</div>
+            <div id="t2" class="tab-btn" onclick="setMode('code')">كود المنصة</div>
+        </div>
+
+        <input type="text" id="mainSearch" placeholder="ادخل رقم دورك هنا">
         
-        <div class="search-tabs">
-            <div id="tabRole" class="tab active" onclick="switchTab('role')">برقم الدور</div>
-            <div id="tabCode" class="tab" onclick="switchTab('code')">بكود المنصة</div>
-        </div>
-
-        <div id="inputContainer">
-            <input type="number" id="searchInput" placeholder="اكتب رقم دورك هنا..">
-        </div>
-
-        <button class="btn-search" onclick="findBooking()">
-            <span>ابحث عن الحجز</span>
-            <i class="fas fa-magic"></i>
+        <button class="search-trigger" onclick="performSearch()">
+            بحث سريع في السجل
         </button>
 
-        <div id="resultArea">
-            <div style="background: #1e293b; padding: 20px; border-radius: 15px; border-right: 4px solid var(--primary);">
-                <p id="resName" style="font-weight: bold; font-size: 18px;"></p>
-                <p id="resId" style="color: #94a3b8; font-size: 13px; margin: 5px 0;"></p>
-                <div id="resStatus" class="status-badge"></div>
+        <div id="dataDisplay">
+            <div class="info-card">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div id="statusPill" class="status-pill">تم الاستلام</div>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">اسم العميل:</span>
+                    <span class="info-val" id="out_name">---</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">المدرسة:</span>
+                    <span class="info-val" id="out_school">---</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">كود الدور:</span>
+                    <span class="info-val" id="out_id">---</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">حالة الدفع:</span>
+                    <span class="info-val" id="out_pay" style="color: #fbbf24;">قيد المراجعة</span>
+                </div>
             </div>
         </div>
 
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+        <a href="index.html" class="back-home"><i class="fas fa-chevron-right"></i> العودة للرئيسية</a>
     </div>
 
     <script>
-        let currentMode = 'role';
+        let mode = 'id';
 
-        function switchTab(mode) {
-            currentMode = mode;
-            document.getElementById('tabRole').classList.toggle('active', mode === 'role');
-            document.getElementById('tabCode').classList.toggle('active', mode === 'code');
-            document.getElementById('searchInput').placeholder = mode === 'role' ? "اكتب رقم دورك هنا.." : "اكتب كود المنصة بتاعك..";
-            document.getElementById('searchInput').type = mode === 'role' ? "number" : "text";
-            document.getElementById('resultArea').style.display = 'none';
+        function setMode(m) {
+            mode = m;
+            document.getElementById('t1').classList.toggle('active', m === 'id');
+            document.getElementById('t2').classList.toggle('active', m === 'code');
+            document.getElementById('mainSearch').placeholder = (m === 'id') ? "ادخل رقم دورك هنا" : "ادخل كود المنصة";
         }
 
-        function findBooking() {
-            const val = document.getElementById('searchInput').value;
-            const resArea = document.getElementById('resultArea');
-            if(!val) return alert("اكتب حاجة نبحث بيها!");
-
-            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        function performSearch() {
+            const query = document.getElementById('mainSearch').value.trim();
+            const db = JSON.parse(localStorage.getItem('samo_db') || '[]');
             
-            // البحث الذكي حسب الاختيار
-            const result = bookings.find(b => 
-                currentMode === 'role' ? b.id.toString() === val : b.pCode === val
-            );
+            const result = db.find(item => {
+                return (mode === 'id') ? item.id.toString() === query : item.pcode === query;
+            });
 
-            if(result) {
-                resArea.style.display = 'block';
-                document.getElementById('resName').innerText = "أهلاً يا " + result.name;
-                document.getElementById('resId').innerText = "رقم دورك الحالي: " + result.id;
-                
-                const statusBtn = document.getElementById('resStatus');
-                statusBtn.innerText = result.status;
-                statusBtn.className = "status-badge " + (result.status === 'تم الانتهاء' ? 'done' : 'pending');
+            if (result) {
+                document.getElementById('dataDisplay').style.display = 'block';
+                document.getElementById('out_name').innerText = result.name;
+                document.getElementById('out_school').innerText = result.school;
+                document.getElementById('out_id').innerText = "#" + result.id;
+                document.getElementById('statusPill').innerText = result.status;
+                document.getElementById('out_pay').innerText = result.pay_status;
             } else {
-                alert("ملقناش بيانات بالاسم ده يا وحش، تأكد من الكود!");
-                resArea.style.display = 'none';
+                alert("للأسف ملقناش بيانات مطابقة.. اتأكد من اللي كتبته!");
+                document.getElementById('dataDisplay').style.display = 'none';
             }
         }
     </script>

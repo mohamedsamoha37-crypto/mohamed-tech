@@ -1,49 +1,276 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>متابعة حالة الحجز</title>
-<style>
-/* CSS نفس index.html */
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
-body{height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#020617,#0f172a);color:white;}
-.container{width:420px;background:#020617;padding:35px;border-radius:20px;box-shadow:0 0 40px rgba(34,197,94,0.3);animation:fadeIn 1s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(40px);} to{opacity:1;transform:translateY(0);}}
-h1{text-align:center;color:#22c55e;font-size:28px;margin-bottom:5px;}
-input,button{width:100%;padding:14px;margin-bottom:15px;border-radius:12px;border:none;outline:none;font-size:15px;}
-input{background:#0f172a;color:white;}
-input::placeholder{color:#64748b;}
-button{background:#22c55e;color:black;font-size:16px;font-weight:bold;cursor:pointer;transition:0.3s;}
-button:hover{background:#16a34a;transform:scale(1.03);}
-.result{background:#0f172a;padding:14px;border-radius:12px;text-align:center;font-weight:bold;color:#facc15;margin-top:10px;}
-a{color:#22c55e;text-align:center;display:block;margin-top:15px;font-weight:bold;text-decoration:none;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متابعة حالة الحجز | Professional Track</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #22c55e;
+            --bg-dark: #020617;
+            --card-bg: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top right, #1e293b, #020617);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+
+        input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            background: #1e293b;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #020617;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background: #4ade80;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Results Area */
+        #resultCard {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .status-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .status-badge {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* Stepper Logic */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #334155;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 33%;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: 0.4s;
+        }
+
+        .step.active .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+        }
+
+        .step-label { font-size: 12px; color: var(--text-muted); }
+        .step.active .step-label { color: white; font-weight: bold; }
+
+        .back-link {
+            text-align: center;
+            display: block;
+            margin-top: 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { color: var(--primary); }
+
+        .error-msg { color: #ef4444; text-align: center; padding: 10px; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-<h1>متابعة حالة الحجز</h1>
-<input type="number" id="bookingId" placeholder="أدخل رقم الحجز" required>
-<input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
-<button id="trackBtn">عرض الحالة</button>
-<div id="result" class="result" style="display:none;"></div>
-<a href="index.html">العودة لصفحة الحجز</a>
+    <h1><i class="fas fa-search-location"></i> متابعة الحجز</h1>
+    
+    <div class="input-group">
+        <i class="fas fa-hashtag"></i>
+        <input type="number" id="bookingId" placeholder="رقم الحجز (مثلاً: 101)" required>
+    </div>
+
+    <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+    </div>
+
+    <button id="trackBtn">
+        <span>تتبع الآن</span>
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div id="resultCard">
+        <div class="status-header">
+            <p id="clientName" style="color: var(--text-muted);"></p>
+            <div id="statusBadge" class="status-badge"></div>
+        </div>
+
+        <div class="stepper">
+            <div class="step" id="step-pending">
+                <div class="step-circle"><i class="fas fa-clock"></i></div>
+                <div class="step-label">قيد الانتظار</div>
+            </div>
+            <div class="step" id="step-confirmed">
+                <div class="step-circle"><i class="fas fa-check"></i></div>
+                <div class="step-label">تم التأكيد</div>
+            </div>
+            <div class="step" id="step-completed">
+                <div class="step-circle"><i class="fas fa-flag-checkered"></i></div>
+                <div class="step-label">مكتمل</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="errorMsg" class="error-msg" style="display:none;"></div>
+
+    <a href="index.html" class="back-link"><i class="fas fa-chevron-right"></i> العودة للرئيسية</a>
 </div>
 
 <script>
-const trackBtn=document.getElementById('trackBtn');
-trackBtn.addEventListener('click',()=>{
-  const id=parseInt(document.getElementById('bookingId').value);
-  const email=document.getElementById('email').value;
-  let bookings=JSON.parse(localStorage.getItem('bookings')||'[]');
-  let found=bookings.find(b=>b.id===id&&b.email===email);
-  const resultDiv=document.getElementById('result');
-  if(found){resultDiv.style.display='block';resultDiv.textContent='حالة حجزك: '+found.status;}
-  else{resultDiv.style.display='block';resultDiv.textContent='لا يوجد حجز مطابق لبياناتك';}
-});
+    const trackBtn = document.getElementById('trackBtn');
+    
+    trackBtn.addEventListener('click', () => {
+        const id = parseInt(document.getElementById('bookingId').value);
+        const email = document.getElementById('email').value.trim().toLowerCase();
+        const resultCard = document.getElementById('resultCard');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // Reset UI
+        resultCard.style.display = 'none';
+        errorMsg.style.display = 'none';
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+        let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        let found = bookings.find(b => b.id === id && b.email.toLowerCase() === email);
+
+        if (found) {
+            resultCard.style.display = 'block';
+            document.getElementById('statusBadge').textContent = found.status;
+            
+            // Update Stepper Logic
+            document.getElementById('step-pending').classList.add('active');
+            
+            if (found.status === 'مؤكد' || found.status === 'Confirmed') {
+                document.getElementById('step-confirmed').classList.add('active');
+            } else if (found.status === 'مكتمل' || found.status === 'Completed') {
+                document.getElementById('step-confirmed').classList.add('active');
+                document.getElementById('step-completed').classList.add('active');
+            }
+        } else {
+            errorMsg.style.display = 'block';
+            errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> عذراً، لم نجد حجزاً بهذه البيانات';
+        }
+    });
 </script>
 
-</body>
-</html>
 </body>
 </html>

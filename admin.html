@@ -3,263 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samo Admin | Master Control</title>
+    <title>Samo Admin | The Master Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        /* --- الأساسيات والأنيميشن --- */
+        /* --- 1. إعدادات التصميم (Theming) --- */
         :root {
             --primary: #22c55e;
-            --accent: #3b82f6;
+            --secondary: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
             --bg: #020617;
             --card: #0f172a;
             --text: #f8fafc;
+            --glass: rgba(30, 41, 59, 0.7);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 20px; }
-
-        /* --- شاشة الدخول --- */
-        #loginScreen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: var(--card); padding: 40px; border-radius: 25px; border: 1px solid var(--primary); text-align: center; }
-
-        /* --- اللوحة الرئيسية --- */
-        .admin-container { max-width: 1200px; margin: auto; display: none; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-item { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stat-item h4 { color: #94a3b8; font-size: 13px; }
-        .stat-item span { font-size: 24px; font-weight: 900; color: var(--primary); }
-
-        /* --- الجدول --- */
-        .table-wrapper { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th { background: rgba(255,255,255,0.02); padding: 15px; font-size: 13px; color: var(--primary); }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .row-item:hover { background: rgba(34, 197, 94, 0.03); cursor: pointer; }
-
-        /* --- شاشة التفاصيل الكبيرة (The Full Overlay) --- */
-        #detailsOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(15px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        [data-theme="light"] {
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
         }
 
-        .details-card {
-            background: var(--card);
-            width: 100%;
-            max-width: 800px;
-            border-radius: 30px;
-            border: 1px solid var(--primary);
-            overflow: hidden;
-            animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* --- 2. شاشة الدخول الاحترافية --- */
+        #loginScreen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid var(--primary); text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 50px rgba(34, 197, 94, 0.2); }
 
-        .details-header { background: var(--primary); color: #000; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .details-body { padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        /* --- 3. الهيكل الرئيسي (Layout) --- */
+        .admin-wrapper { max-width: 1200px; margin: auto; padding: 20px; display: none; }
         
-        .data-group { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; position: relative; }
-        .data-group label { display: block; font-size: 11px; color: var(--primary); margin-bottom: 5px; }
-        .data-group p { font-size: 16px; font-weight: bold; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .header-title h1 { font-size: 24px; color: var(--primary); }
+
+        /* --- 4. بار الإحصائيات (Stats Cards) --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
+        .stat-card i { position: absolute; left: -10px; bottom: -10px; font-size: 60px; opacity: 0.1; color: var(--primary); }
+        .stat-card h4 { font-size: 13px; color: #94a3b8; }
+        .stat-card .val { font-size: 28px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
+
+        /* --- 5. أدوات التحكم (Search & Tools) --- */
+        .tools-bar { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .search-area { position: relative; }
+        .search-area i { position: absolute; right: 15px; top: 15px; color: var(--primary); }
+        .search-area input { width: 100%; padding: 14px 45px; background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; outline: none; }
+
+        .btn-tool { padding: 10px 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+        .btn-export { background: var(--secondary); color: white; }
+        .btn-theme { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
+
+        /* --- 6. الجدول الذكي (Responsive Table) --- */
+        .table-section { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { padding: 15px; text-align: right; background: rgba(255,255,255,0.02); color: var(--primary); font-size: 13px; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; white-space: nowrap; }
+        .row-item:hover { background: rgba(255,255,255,0.02); cursor: pointer; }
+
+        /* --- 7. الأوفرلاي العملاق (Master Detail View) --- */
+        #masterOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 4000; justify-content: center; align-items: flex-start; padding: 15px; overflow-y: auto; }
+        .master-card { background: var(--card); width: 100%; max-width: 600px; border-radius: 30px; border: 1px solid var(--primary); margin: 20px auto; overflow: hidden; animation: popUp 0.3s ease; }
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } }
+
+        .master-header { padding: 20px; background: var(--primary); color: #000; display: flex; justify-content: space-between; align-items: center; }
+        .master-body { padding: 25px; }
         
-        .copy-btn { position: absolute; left: 10px; top: 15px; background: var(--primary); color: #000; border: none; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .data-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; position: relative; }
+        .data-box label { display: block; font-size: 11px; color: var(--primary); margin-bottom: 5px; }
+        .data-box p { font-size: 16px; font-weight: bold; }
+        .copy-ico { position: absolute; left: 15px; top: 15px; color: var(--primary); cursor: pointer; }
 
-        .status-changer { margin-top: 20px; display: flex; gap: 10px; align-items: center; }
-        .status-select { background: #1e293b; color: white; border: 1px solid var(--primary); padding: 10px; border-radius: 10px; outline: none; flex: 1; }
+        .control-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        select { background: #1e293b; color: white; padding: 12px; border-radius: 10px; border: 1px solid var(--primary); outline: none; width: 100%; }
 
-        .action-footer { padding: 20px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; }
-        .btn { padding: 12px 25px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-save { background: var(--primary); color: #000; }
-        .btn-del { background: #ef4444; color: white; }
+        /* --- 8. سجل النشاطات (Log) --- */
+        .log-section { margin-top: 30px; background: #000; padding: 20px; border-radius: 20px; border-left: 4px solid var(--secondary); }
+        .log-section h3 { font-size: 14px; margin-bottom: 10px; color: var(--secondary); }
+        #activityLog { font-size: 12px; height: 100px; overflow-y: auto; color: #64748b; }
+
+        /* --- 9. الميديا كويري --- */
+        @media (max-width: 600px) {
+            .tools-bar { grid-template-columns: 1fr; }
+            .control-group { grid-template-columns: 1fr; }
+            .header-title h1 { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
 
     <div id="loginScreen">
         <div class="login-box">
-            <i class="fas fa-fingerprint" style="font-size: 50px; color: var(--primary); margin-bottom: 15px;"></i>
-            <h3>Samo Control Panel</h3>
-            <input type="password" id="adminPass" placeholder="كلمة المرور" style="width:100%; padding:12px; margin:15px 0; background:#000; border:1px solid #334155; color:white; border-radius:10px; text-align:center;">
-            <button onclick="checkAdmin()" style="width:100%; padding:12px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; cursor:pointer;">دخول النظام</button>
+            <i class="fas fa-user-shield" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>مرحباً بك يا سيمو</h2>
+            <p style="color:#64748b; font-size:12px; margin-bottom:20px;">ادخل كلمة السر لفتح مركز التحكم</p>
+            <input type="password" id="passInput" placeholder="كلمة المرور" style="width:100%; padding:15px; background:#000; border:1px solid #334155; color:white; border-radius:12px; text-align:center; margin-bottom:15px; outline:none;">
+            <button onclick="accessAdmin()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:12px; font-weight:900; cursor:pointer;">فتح اللوحة</button>
         </div>
     </div>
 
-    <div class="admin-container" id="adminPanel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-            <h2>لوحة إدارة سيمو العبقري <i class="fas fa-crown" style="color:gold"></i></h2>
-            <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-sign-out-alt"></i> خروج</button>
-        </div>
-
-        <div class="stats-bar">
-            <div class="stat-item"><h4>إجمالي الطلبات</h4><span id="s_total">0</span></div>
-            <div class="stat-item"><h4>أرباح متوقعة</h4><span id="s_money">0</span></div>
-            <div class="stat-item"><h4>تم الانتهاء</h4><span id="s_done">0</span></div>
-        </div>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>رقم الدور</th>
-                        <th>الاسم</th>
-                        <th>المدرسة</th>
-                        <th>الحالة</th>
-                        <th>إجراء</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="detailsOverlay">
-        <div class="details-card">
-            <div class="details-header">
-                <h3>تفاصيل حجز: <span id="det_name_title"></span></h3>
-                <i class="fas fa-times" onclick="closeDetails()" style="cursor:pointer; font-size:20px;"></i>
+    <div class="admin-wrapper" id="adminMain">
+        <header>
+            <div class="header-title">
+                <h1>لوحة إدارة سيمو العبقري <i class="fas fa-bolt"></i></h1>
             </div>
-            <div class="details-body">
-                <div class="data-group">
+            <div style="display:flex; gap:10px;">
+                <button class="btn-tool btn-theme" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                <button class="btn-tool" style="background:var(--danger); color:white;" onclick="location.reload()">خروج</button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-user-graduate"></i><h4>إجمالي الطلاب</h4><span class="val" id="s_total">0</span></div>
+            <div class="stat-card"><i class="fas fa-coins"></i><h4>أرباحك (ج.م)</h4><span class="val" id="s_money">0</span></div>
+            <div class="stat-card"><i class="fas fa-check-circle"></i><h4>تم تنفيذهم</h4><span class="val" id="s_done">0</span></div>
+            <div class="stat-card"><i class="fas fa-school"></i><h4>المدارس</h4><span class="val" id="s_schools">0</span></div>
+        </div>
+
+        <div class="tools-bar">
+            <div class="search-area">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" onkeyup="searchSystem()" placeholder="ابحث بالاسم، الكود، أو المدرسة...">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-tool btn-export" onclick="downloadData()"><i class="fas fa-download"></i> تصدير البيانات</button>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th># الدور</th>
+                            <th>اسم الطالب</th>
+                            <th>المدرسة</th>
+                            <th>الحالة</th>
+                            <th>الدفع</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="log-section">
+            <h3><i class="fas fa-history"></i> سجل العمليات السريعة</h3>
+            <div id="activityLog"></div>
+        </div>
+    </div>
+
+    <div id="masterOverlay">
+        <div class="master-card">
+            <div class="master-header">
+                <h3>ملف الطالب: <span id="m_title"></span></h3>
+                <i class="fas fa-times-circle" onclick="closeMaster()" style="cursor:pointer; font-size:25px;"></i>
+            </div>
+            <div class="master-body">
+                <div class="data-box">
                     <label>الاسم الكامل</label>
-                    <p id="det_name"></p>
+                    <p id="m_name"></p>
                 </div>
-                <div class="data-group">
+                <div class="data-box">
                     <label>المدرسة والفصل</label>
-                    <p id="det_school_class"></p>
+                    <p id="m_school_class"></p>
                 </div>
-                <div class="data-group">
-                    <label>كود المنصة</label>
-                    <p id="det_pcode"></p>
-                    <button class="copy-btn" onclick="copyText('det_pcode')">نسخ الكود</button>
+                <div class="data-box">
+                    <label>كود الطالب (المنصة)</label>
+                    <p id="m_pcode"></p>
+                    <i class="fas fa-copy copy-ico" onclick="copyValue('m_pcode')"></i>
                 </div>
-                <div class="data-group">
-                    <label>باسورد المنصة</label>
-                    <p id="det_ppass"></p>
-                    <button class="copy-btn" onclick="copyText('det_ppass')">نسخ الباسورد</button>
+                <div class="data-box">
+                    <label>كلمة السر (المنصة)</label>
+                    <p id="m_ppass"></p>
+                    <i class="fas fa-copy copy-ico" onclick="copyValue('m_ppass')"></i>
                 </div>
-                <div class="data-group">
-                    <label>طريقة الدفع وبياناته</label>
-                    <p id="det_pay_info"></p>
+                <div class="data-box">
+                    <label>بيانات الدفع والتحويل</label>
+                    <p id="m_pay_details"></p>
                 </div>
-                <div class="data-group">
-                    <label>تاريخ ووقت الحجز</label>
-                    <p id="det_time"></p>
+                <div class="data-box">
+                    <label>تاريخ الحجز</label>
+                    <p id="m_date"></p>
                 </div>
 
-                <div class="data-group" style="grid-column: span 2;">
-                    <label>تغيير حالة الحجز</label>
-                    <div class="status-changer">
-                        <select id="newStatus" class="status-select">
+                <div class="control-group">
+                    <div>
+                        <label style="font-size:11px; color:var(--primary)">حالة الطلب:</label>
+                        <select id="m_status_sel">
                             <option value="تم الاستلام">⏳ تم الاستلام</option>
                             <option value="جاري العمل">🛠️ جاري العمل</option>
                             <option value="تم الانتهاء">✅ تم الانتهاء</option>
                             <option value="مرفوض">❌ مرفوض</option>
                         </select>
-                        <select id="newPayStatus" class="status-select">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; color:var(--primary)">حالة الدفع:</label>
+                        <select id="m_pay_sel">
                             <option value="لم يدفع">🔴 لم يدفع</option>
                             <option value="تم الدفع">🟢 تم الدفع</option>
                         </select>
                     </div>
                 </div>
-            </div>
-            <div class="action-footer">
-                <button class="btn btn-del" onclick="deleteCurrent()">حذف الحجز نهائياً</button>
-                <button class="btn btn-save" onclick="saveChanges()">حفظ التعديلات الجديدة</button>
+                
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px; margin-top:20px;">
+                    <button class="btn-tool" style="background:var(--danger); color:white; justify-content:center;" onclick="deleteData()">حذف الحجز</button>
+                    <button class="btn-tool" style="background:var(--primary); color:#000; justify-content:center;" onclick="saveMaster()">حفظ التعديلات النهائية</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentDB = [];
-        let editingIndex = null;
+        let db = [];
+        let editIdx = null;
 
-        function checkAdmin() {
-            if(document.getElementById('adminPass').value === "Mody1234m@") {
+        // الدخول
+        function accessAdmin() {
+            if(document.getElementById('passInput').value === "Mody1234m@") {
                 document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                loadData();
-            } else { alert("غلط يا وحش!"); }
+                document.getElementById('adminMain').style.display = 'block';
+                refreshData();
+                addLog("تم تسجيل الدخول بنجاح");
+            } else { alert("كلمة السر غلط يا سيمو!"); }
         }
 
-        function loadData() {
-            currentDB = JSON.parse(localStorage.getItem('samo_db') || '[]');
+        // تحديث البيانات والإحصائيات
+        function refreshData() {
+            db = JSON.parse(localStorage.getItem('samo_db') || '[]');
             const tbody = document.getElementById('tbody');
             tbody.innerHTML = '';
             
             let money = 0;
             let done = 0;
+            let schools = new Set();
 
-            currentDB.forEach((item, i) => {
+            db.forEach((item, i) => {
                 if(item.pay_status === 'تم الدفع') money += 50;
                 if(item.status === 'تم الانتهاء') done++;
+                schools.add(item.school);
 
                 tbody.innerHTML += `
-                    <tr class="row-item" onclick="openDetails(${i})">
-                        <td style="font-weight:bold; color:var(--primary)">#${item.id}</td>
+                    <tr class="row-item" onclick="openMaster(${i})">
+                        <td style="color:var(--primary); font-weight:bold;">#${item.id}</td>
                         <td>${item.name}</td>
                         <td>${item.school}</td>
-                        <td><span style="font-size:11px; padding:5px; background:rgba(255,255,255,0.05); border-radius:5px;">${item.status}</span></td>
-                        <td><button style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; color:white; font-size:10px;">عرض وتحكم</button></td>
+                        <td><span style="font-size:11px; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:5px;">${item.status}</span></td>
+                        <td><i class="fas fa-circle" style="color:${item.pay_status === 'تم الدفع' ? 'var(--primary)' : 'var(--danger)'}; font-size:8px;"></i> ${item.pay_status}</td>
+                        <td><button class="btn-tool" style="background:var(--primary); color:#000; padding:5px 10px;">تحكم</button></td>
                     </tr>
                 `;
             });
 
-            document.getElementById('s_total').innerText = currentDB.length;
-            document.getElementById('s_money').innerText = money + " ج.م";
+            document.getElementById('s_total').innerText = db.length;
+            document.getElementById('s_money').innerText = money;
             document.getElementById('s_done').innerText = done;
+            document.getElementById('s_schools').innerText = schools.size;
         }
 
-        function openDetails(index) {
-            editingIndex = index;
-            const item = currentDB[index];
-            document.getElementById('det_name_title').innerText = item.name;
-            document.getElementById('det_name').innerText = item.name;
-            document.getElementById('det_school_class').innerText = item.school + " - " + item.class;
-            document.getElementById('det_pcode').innerText = item.pcode;
-            document.getElementById('det_ppass').innerText = item.ppass;
-            document.getElementById('det_pay_info').innerText = item.method + " (" + (item.pay_ph || 'لا يوجد') + ")";
-            document.getElementById('det_time').innerText = item.date || 'غير مسجل';
-            document.getElementById('newStatus').value = item.status;
-            document.getElementById('newPayStatus').value = item.pay_status;
+        // فتح الأوفرلاي
+        function openMaster(idx) {
+            editIdx = idx;
+            const item = db[idx];
+            document.getElementById('m_title').innerText = item.name.split(' ')[0];
+            document.getElementById('m_name').innerText = item.name;
+            document.getElementById('m_school_class').innerText = item.school + " (" + item.class + ")";
+            document.getElementById('m_pcode').innerText = item.pcode;
+            document.getElementById('m_ppass').innerText = item.ppass;
+            document.getElementById('m_pay_details').innerText = item.method + " | " + (item.pay_ph || 'لا يوجد رقم');
+            document.getElementById('m_date').innerText = item.date || 'غير محدد';
+            document.getElementById('m_status_sel').value = item.status;
+            document.getElementById('m_pay_sel').value = item.pay_status;
             
-            document.getElementById('detailsOverlay').style.display = 'flex';
+            document.getElementById('masterOverlay').style.display = 'flex';
         }
 
-        function closeDetails() { document.getElementById('detailsOverlay').style.display = 'none'; }
+        function closeMaster() { document.getElementById('masterOverlay').style.display = 'none'; }
 
-        function saveChanges() {
-            currentDB[editingIndex].status = document.getElementById('newStatus').value;
-            currentDB[editingIndex].pay_status = document.getElementById('newPayStatus').value;
-            localStorage.setItem('samo_db', JSON.stringify(currentDB));
-            closeDetails();
-            loadData();
-            alert("تم التحديث بنجاح!");
+        // حفظ التعديلات
+        function saveMaster() {
+            db[editIdx].status = document.getElementById('m_status_sel').value;
+            db[editIdx].pay_status = document.getElementById('m_pay_sel').value;
+            localStorage.setItem('samo_db', JSON.stringify(db));
+            addLog(`تم تحديث بيانات الطالب: ${db[editIdx].name}`);
+            closeMaster();
+            refreshData();
         }
 
-        function deleteCurrent() {
-            if(confirm("هتمسحه خالص؟")) {
-                currentDB.splice(editingIndex, 1);
-                localStorage.setItem('samo_db', JSON.stringify(currentDB));
-                closeDetails();
-                loadData();
+        // حذف
+        function deleteData() {
+            if(confirm("هل أنت متأكد من الحذف النهائي؟")) {
+                addLog(`تم حذف الطالب: ${db[editIdx].name}`);
+                db.splice(editIdx, 1);
+                localStorage.setItem('samo_db', JSON.stringify(db));
+                closeMaster();
+                refreshData();
             }
         }
 
-        function copyText(id) {
-            const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text);
-            alert("تم النسخ: " + text);
+        // البحث الذكي
+        function searchSystem() {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+            });
         }
 
-        function logout() { window.location.reload(); }
+        // النسخ الاحتياطي (تصدير)
+        function downloadData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "samo_backup_" + new Date().toLocaleDateString() + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            addLog("تم تصدير نسخة احتياطية من البيانات");
+        }
+
+        // سجل النشاطات
+        function addLog(msg) {
+            const logBox = document.getElementById('activityLog');
+            const time = new Date().toLocaleTimeString();
+            logBox.innerHTML = `<div>[${time}] ${msg}</div>` + logBox.innerHTML;
+        }
+
+        // الوضع الليلي
+        function toggleTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            if(theme === 'light') {
+                body.removeAttribute('data-theme');
+                addLog("تم تفعيل الوضع الليلي");
+            } else {
+                body.setAttribute('data-theme', 'light');
+                addLog("تم تفعيل الوضع النهاري");
+            }
+        }
+
+        // نسخ القيم بضغطة واحدة
+        function copyValue(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            alert("تم نسخ: " + text);
+        }
     </script>
 </body>
-</html>
+                    </html>
+                    

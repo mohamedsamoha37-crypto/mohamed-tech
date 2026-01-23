@@ -3,116 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samo Solutions | الحجز</title>
+    <title>Samo Solutions | حجز احترافي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #22c55e; --bg: #020617; --card: #0f172a; --input: #1e293b; --text: #ffffff; }
-        .light-mode { --bg: #f1f5f9; --card: #ffffff; --input: #e2e8f0; --text: #0f172a; }
+        :root { --primary: #22c55e; --bg: #020617; --card: #0f172a; --text: #ffffff; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        
-        .top-bar { position: fixed; top: 20px; width: 100%; max-width: 500px; display: flex; justify-content: space-between; z-index: 100; }
-        .icon-btn { width: 45px; height: 45px; border-radius: 50%; background: var(--card); border: 1px solid var(--primary); color: var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; }
-
-        .container { width: 100%; max-width: 480px; background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideUp 0.6s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .shake { animation: shake 0.4s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-
-        h1 { text-align: center; color: var(--primary); margin-bottom: 20px; font-size: 24px; }
-        .section-label { font-size: 12px; color: var(--primary); font-weight: bold; margin: 15px 0 5px; border-right: 3px solid var(--primary); padding-right: 8px; }
-        input, select { width: 100%; padding: 12px 15px; background: var(--input); border: 1px solid transparent; border-radius: 12px; color: var(--text); outline: none; margin-bottom: 10px; }
+        body { background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .server-status { background: rgba(34, 197, 94, 0.1); padding: 8px 15px; border-radius: 20px; font-size: 12px; color: var(--primary); margin-bottom: 20px; border: 1px solid var(--primary); }
+        .dot { height: 8px; width: 8px; background-color: var(--primary); border-radius: 50%; display: inline-block; margin-left: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        input, select { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
         input:focus { border-color: var(--primary); }
-        
-        .pay-grid { display: flex; gap: 10px; margin: 10px 0; }
-        .pay-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #334155; cursor: pointer; text-align: center; background: var(--input); }
-        .pay-btn.active { background: var(--primary); color: #000; font-weight: bold; border-color: var(--primary); }
-        
-        #payFields { display: none; background: rgba(34, 197, 94, 0.05); padding: 15px; border-radius: 15px; border: 1px dashed var(--primary); margin: 10px 0; }
-        .voda-box { background: #ef4444; color: white; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; }
-        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 30px; text-align: center; border: 2px solid var(--primary); animation: pop 0.4s ease; width: 90%; max-width: 350px; }
+        @keyframes pop { from { transform: scale(0.8); } to { transform: scale(1); } }
     </style>
 </head>
 <body>
-
-<div class="top-bar">
-    <button class="icon-btn" onclick="document.body.classList.toggle('light-mode')"><i class="fas fa-adjust"></i></button>
-    <a href="admin.html" class="icon-btn"><i class="fas fa-user-shield"></i></a>
-</div>
-
-<div class="container" id="mainContainer">
-    <h1>SAMO SOLUTIONS 🚀</h1>
-    <div class="section-label">بياناتك الشخصية</div>
-    <input type="text" id="uName" placeholder="الاسم الكامل">
-    <input type="text" id="uSchool" placeholder="اسم المدرسة">
-    <select id="uClass"><option>1/1</option><option>1/2</option><option>1/3</option><option>1/4</option><option>1/5</option></select>
-    <input type="email" id="uEmail" placeholder="البريد الإلكتروني">
-
-    <div class="section-label">بيانات المنصة</div>
-    <div style="display:flex; gap:10px;">
+    <div class="server-status"><span class="dot"></span> النظام يعمل بكفاءة - Samo Solutions</div>
+    <div class="container">
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">حجز مقعدك <i class="fas fa-rocket"></i></h2>
+        <input type="text" id="uName" placeholder="الاسم الكامل">
+        <input type="email" id="uEmail" placeholder="البريد الإلكتروني">
         <input type="text" id="pCode" placeholder="كود المنصة">
-        <input type="password" id="pPass" placeholder="كلمة السر">
+        <select id="uMethod" onchange="toggleVoda()">
+            <option value="">اختر طريقة الدفع</option>
+            <option value="نقدي">نقدي</option>
+            <option value="فودافون">فودافون كاش</option>
+        </select>
+        <div id="vodaFields" style="display:none; background:#1e293b; padding:15px; border-radius:12px; margin-bottom:15px;">
+            <p style="font-size:12px; color:var(--primary);">حول على: 01060904228</p>
+            <input type="file" id="uScreen" style="margin-top:10px; font-size:10px;">
+        </div>
+        <button class="btn-main" onclick="processBooking()">تأكيد الحجز الآن</button>
+        <div style="margin-top:20px; text-align:center;">
+            <a href="ai-fixer.html" style="color:#3b82f6; text-decoration:none; font-size:13px;"><i class="fas fa-comment-dots"></i> لو عاوز تستفسر عن حاجة (Samo AI)</a>
+        </div>
     </div>
-
-    <div class="section-label">طريقة الدفع</div>
-    <div class="pay-grid">
-        <div class="pay-btn" id="mCash" onclick="setPay('نقدي')">نقدي</div>
-        <div class="pay-btn" id="mVoda" onclick="setPay('فودافون كاش')">فودافون كاش</div>
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle" style="font-size:50px; color:var(--primary);"></i>
+            <h2 style="margin:15px 0;">تم الحجز يا وحش!</h2>
+            <p>رقم دورك:</p>
+            <h1 id="orderIdDisplay" style="color:var(--primary); margin:10px 0; letter-spacing:5px;"></h1>
+            <button class="btn-main" onclick="copyAndGo()">نسخ الرقم ومتابعة</button>
+        </div>
     </div>
-    <div id="payFields"></div>
-
-    <button class="submit-btn" onclick="validate()">تأكيد الحجز الآن</button>
-    <a href="track.html" style="display:block; text-align:center; margin-top:15px; color:var(--primary); text-decoration:none; font-size:14px;">تتبع طلبك من هنا</a>
-</div>
-
-<script>
-    let currentPay = "";
-    function setPay(m) {
-        currentPay = m;
-        const pf = document.getElementById('payFields'); pf.style.display = 'block';
-        document.getElementById('mCash').classList.toggle('active', m==='نقدي');
-        document.getElementById('mVoda').classList.toggle('active', m==='فودافون كاش');
-        if(m==='فودافون كاش') {
-            pf.innerHTML = `<div class="voda-box"><span>01060904228</span><button onclick="navigator.clipboard.writeText('01060904228');alert('تم النسخ')" style="padding:2px 8px;border-radius:5px;border:none;cursor:pointer">نسخ</button></div>
-            <input type="number" id="payPh" placeholder="الرقم اللي حولت منه">
-            <input type="text" id="paySr" placeholder="الرقم التسلسلي للعملية">`;
-        } else {
-            pf.innerHTML = `<input type="text" id="payTi" placeholder="موعد المقابلة (مثلاً: بكرة الفسحة)">
-            <input type="text" id="payAd" placeholder="عنوانك أو مكانك في المدرسة">`;
+    <script>
+        function toggleVoda() { document.getElementById('vodaFields').style.display = document.getElementById('uMethod').value === 'فودافون' ? 'block' : 'none'; }
+        function processBooking() {
+            const name = document.getElementById('uName').value;
+            const email = document.getElementById('uEmail').value;
+            if(!name || !email) return alert("كمل بياناتك!");
+            let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            if(bookings.some(b => b.email === email)) return alert("الإيميل ده محجوز قبل كدة!");
+            const id = Math.floor(1000 + Math.random() * 9000);
+            bookings.push({ id, name, email, method: document.getElementById('uMethod').value, status: 'تم الاستلام', payStatus: 'لم يدفع' });
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            document.getElementById('orderIdDisplay').innerText = id;
+            document.getElementById('successModal').style.display = 'flex';
         }
-    }
-
-    function validate() {
-        const name = document.getElementById('uName').value;
-        if(!name || !currentPay) {
-            document.getElementById('mainContainer').classList.add('shake');
-            setTimeout(() => document.getElementById('mainContainer').classList.remove('shake'), 400);
-            return alert('كمل بياناتك يا بطل!');
-        }
-        save();
-    }
-
-    function save() {
-        const data = {
-            id: Math.floor(1000 + Math.random()*9000),
-            name: document.getElementById('uName').value,
-            school: document.getElementById('uSchool').value,
-            class: document.getElementById('uClass').value,
-            email: document.getElementById('uEmail').value,
-            pCode: document.getElementById('pCode').value,
-            pPass: document.getElementById('pPass').value,
-            method: currentPay,
-            payPh: document.getElementById('payPh')?.value || '',
-            payTi: document.getElementById('payTi')?.value || '',
-            status: 'تم الاستلام',
-            payStatus: 'لم يدفع'
-        };
-        let b = JSON.parse(localStorage.getItem('bookings') || '[]');
-        b.push(data);
-        localStorage.setItem('bookings', JSON.stringify(b));
-        alert('تم بنجاح! رقمك: ' + data.id);
-        window.location.href = 'track.html';
-    }
-</script>
+        function copyAndGo() { navigator.clipboard.writeText(document.getElementById('orderIdDisplay').innerText); window.location.href = 'track.html'; }
+    </script>
 </body>
 </html>

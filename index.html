@@ -3,425 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samo Solutions | نظام الحجز المتكامل</title>
-    
+    <title>Samo Solutions | الحجز المعتمد</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <style>
-        /* 1. إعدادات الألوان والمتغيرات العالمية */
+        /* --- CSS ENGINE (150+ Lines of Styling) --- */
         :root {
-            --primary-color: #22c55e;
-            --primary-hover: #4ade80;
+            --primary: #22c55e;
+            --primary-glow: rgba(34, 197, 94, 0.4);
             --bg-dark: #020617;
-            --card-bg: #0f172a;
-            --input-bg: #1e293b;
-            --text-white: #ffffff;
-            --text-gray: #94a3b8;
-            --danger: #ef4444;
-            --shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --input-bg: rgba(30, 41, 59, 0.5);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
         }
 
-        /* 2. التنسيق العام للجسم */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            scroll-behavior: smooth;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body {
             background: var(--bg-dark);
-            color: var(--text-white);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(34, 197, 94, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
             min-height: 100vh;
             padding: 40px 20px;
-            overflow-x: hidden;
         }
 
-        /* 3. حاوية المحتوى الرئيسية */
-        .main-wrapper {
+        .container {
             width: 100%;
             max-width: 550px;
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             padding: 40px;
             border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: var(--shadow);
-            position: relative;
-            animation: slideDown 1s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s ease-out;
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-50px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 4. الهيدر والشعار */
-        .form-header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
+        .header-box { text-align: center; margin-bottom: 30px; }
+        .header-box h1 { font-size: 28px; color: var(--primary); letter-spacing: 1px; margin-bottom: 10px; }
+        .header-box p { color: var(--text-dim); font-size: 14px; }
 
-        .form-header h1 {
-            font-size: 30px;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-        }
-
-        .form-header p {
-            color: var(--text-gray);
-            font-size: 14px;
-        }
-
-        /* 5. تنسيق الخانات */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: var(--primary-color);
-            margin-right: 5px;
-            font-weight: 600;
-        }
-
-        .input-group i {
-            position: absolute;
-            right: 15px;
-            top: 38px;
-            color: var(--text-gray);
-            font-size: 16px;
-        }
+        .input-wrapper { position: relative; margin-bottom: 18px; }
+        .input-wrapper label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--primary); font-weight: 600; }
+        .input-wrapper i { position: absolute; right: 15px; top: 38px; color: var(--text-dim); }
 
         input, select {
             width: 100%;
             padding: 14px 45px 14px 15px;
             background: var(--input-bg);
-            border: 1px solid #334155;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             color: white;
-            font-size: 15px;
             outline: none;
-            transition: all 0.3s ease-in-out;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-            background: #111827;
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
-            transform: translateY(-2px);
-        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); background: rgba(15, 23, 42, 0.9); }
 
-        /* 6. قسم الدفع المتقدم */
-        #vodaPanel {
+        .payment-box {
             display: none;
-            background: rgba(34, 197, 94, 0.03);
-            border: 1px dashed var(--primary-color);
-            border-radius: 15px;
+            background: rgba(34, 197, 94, 0.05);
             padding: 20px;
-            margin-bottom: 20px;
-            animation: fadeIn 0.5s ease;
+            border-radius: 15px;
+            border: 1px dashed var(--primary);
+            margin-bottom: 18px;
+            animation: fadeIn 0.4s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; } to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .voda-notice {
-            background: var(--primary-color);
-            color: #000;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
+        .voda-tag { background: var(--primary); color: #000; padding: 8px; border-radius: 8px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 15px; }
 
-        /* 7. الأزرار */
         .submit-btn {
             width: 100%;
             padding: 18px;
-            background: var(--primary-color);
+            background: var(--primary);
             color: #000;
             border: none;
             border-radius: 15px;
             font-size: 18px;
-            font-weight: 900;
+            font-weight: 800;
             cursor: pointer;
+            transition: 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+            gap: 10px;
         }
 
-        .submit-btn:hover {
-            background: var(--primary-hover);
-            transform: scale(1.02);
-            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.3);
-        }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px var(--primary-glow); }
 
-        .footer-link {
-            text-align: center;
-            margin-top: 25px;
-        }
+        .footer-links { margin-top: 25px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
+        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .footer-links a:hover { color: var(--primary); }
 
-        .footer-link a {
-            color: var(--text-gray);
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
+        /* زر الإدارة المخفي */
+        .admin-lock {
+            margin-top: 30px;
+            opacity: 0.3;
+            transition: 0.5s;
+            cursor: pointer;
+            color: var(--text-dim);
+            font-size: 12px;
         }
+        .admin-lock:hover { opacity: 1; color: var(--primary); }
 
-        .footer-link a:hover {
-            color: var(--primary-color);
-        }
-
-        /* 8. النافذة المنبثقة الاحترافية */
-        .overlay {
+        /* Modal النجاح */
+        .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
-            z-index: 10000;
+            z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
-        .success-card {
+        .modal-card {
             background: var(--card-bg);
+            padding: 40px;
+            border-radius: 30px;
+            border: 2px solid var(--primary);
+            text-align: center;
             width: 90%;
             max-width: 400px;
-            padding: 40px;
-            border-radius: 35px;
-            text-align: center;
-            border: 2px solid var(--primary-color);
-            position: relative;
-            animation: popUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes popUp {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        @keyframes pop { from { transform: scale(0.5); } to { transform: scale(1); } }
 
-        .order-number {
-            font-size: 45px;
+        .order-id-display {
+            font-size: 42px;
             font-weight: 900;
-            color: var(--primary-color);
+            color: var(--primary);
             margin: 20px 0;
-            letter-spacing: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            letter-spacing: 5px;
+            background: rgba(255,255,255,0.05);
             padding: 15px;
-            border-radius: 20px;
-        }
-
-        /* 9. تأثير التحميل Loader */
-        .loader-spinner {
-            display: none;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* تعديلات للموبايل */
-        @media (max-width: 480px) {
-            .main-wrapper { padding: 25px; }
-            .form-header h1 { font-size: 24px; }
+            border-radius: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="main-wrapper">
-        <div class="form-header">
+    <div class="container">
+        <div class="header-box">
             <h1>SAMO SOLUTIONS</h1>
-            <p>سجل بياناتك بدقة لضمان سرعة التنفيذ</p>
+            <p>نظام الحجز الذكي - 2026</p>
         </div>
 
-        <div id="bookingForm">
-            <div class="input-group">
-                <label>الاسم الرباعي</label>
+        <div id="booking-form">
+            <div class="input-wrapper">
+                <label>الاسم الكامل</label>
                 <i class="fas fa-user"></i>
-                <input type="text" id="node_name" placeholder="أدخل اسمك بالكامل">
+                <input type="text" id="in_name" placeholder="ادخل اسمك هنا">
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <label>المدرسة</label>
                 <i class="fas fa-school"></i>
-                <input type="text" id="node_school" placeholder="اسم مدرستك">
+                <input type="text" id="in_school" placeholder="اسم مدرستك">
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <label>الفصل</label>
                 <i class="fas fa-users"></i>
-                <input type="text" id="node_class" placeholder="مثال: 2/1">
+                <input type="text" id="in_class" placeholder="مثال: 2/1">
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <label>البريد الإلكتروني</label>
                 <i class="fas fa-envelope"></i>
-                <input type="email" id="node_email" placeholder="example@mail.com">
+                <input type="email" id="in_email" placeholder="example@mail.com">
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <label>كود المنصة</label>
-                <i class="fas fa-id-card"></i>
-                <input type="text" id="node_pcode" placeholder="أدخل كود الطالب">
+                <i class="fas fa-id-badge"></i>
+                <input type="text" id="in_pcode" placeholder="كود الطالب">
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <label>كلمة سر المنصة</label>
-                <i class="fas fa-lock"></i>
-                <input type="text" id="node_ppass" placeholder="كلمة المرور">
+                <i class="fas fa-key"></i>
+                <input type="text" id="in_ppass" placeholder="باسورد المنصة">
             </div>
 
-            <div class="input-group">
-                <label>وسيلة الدفع</label>
-                <i class="fas fa-wallet"></i>
-                <select id="node_method" onchange="handlePaymentView()">
-                    <option value="">-- اختر الوسيلة --</option>
-                    <option value="cash">نقدي (يد بيد)</option>
-                    <option value="voda">فودافون كاش (محفظة)</option>
+            <div class="input-wrapper">
+                <label>طريقة الدفع</label>
+                <i class="fas fa-credit-card"></i>
+                <select id="in_method" onchange="togglePayment()">
+                    <option value="">-- اختر وسيلة الدفع --</option>
+                    <option value="cash">نقدي (في المدرسة)</option>
+                    <option value="voda">فودافون كاش</option>
                 </select>
             </div>
 
-            <div id="vodaPanel">
-                <div class="voda-notice">التحويل لرقـم: 01060904228</div>
-                <div class="input-group">
-                    <label>الرقم المحول منه</label>
-                    <input type="text" id="node_pay_ph" placeholder="01xxxxxxxxx">
+            <div id="voda_panel" class="payment-box">
+                <div class="voda-tag">التحويل لـ : 01060904228</div>
+                <div class="input-wrapper">
+                    <label>رقمك المحول منه</label>
+                    <input type="text" id="in_pay_ph" placeholder="01xxxxxxxxx">
                 </div>
-                <div class="input-group">
-                    <label>توقيت العملية</label>
-                    <input type="text" id="node_pay_time" placeholder="الساعة والدقيقة">
+                <div class="input-wrapper">
+                    <label>وقت العملية</label>
+                    <input type="text" id="in_pay_time" placeholder="مثال: 02:30 م">
                 </div>
             </div>
 
-            <button class="submit-btn" onclick="executeBooking()">
-                <span id="btnText">تأكيد الحجز الآن</span>
-                <div id="btnLoader" class="loader-spinner"></div>
-                <i class="fas fa-paper-plane"></i>
+            <button class="submit-btn" onclick="submitBooking()">
+                تأكيد الحجز الآن <i class="fas fa-paper-plane"></i>
             </button>
 
-            <div class="footer-link">
-                <a href="track.html">لديك حجز بالفعل؟ تتبع حالته من هنا</a>
+            <div class="footer-links">
+                <a href="track.html"><i class="fas fa-search"></i> تتبع حجز سابق</a>
             </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="admin.html" class="admin-lock">
+                <i class="fas fa-lock"></i> لوحة الإدارة
+            </a>
         </div>
     </div>
 
-    <div class="overlay" id="successOverlay">
-        <div class="success-card">
-            <i class="fas fa-check-circle" style="font-size: 70px; color: var(--primary-color);"></i>
-            <h2 style="margin-top:20px;">ممتاز يا بطل!</h2>
-            <p style="color: var(--text-gray); margin-top:10px;">تم تسجيل حجزك في قاعدة بيانات سيمو</p>
-            <div class="order-number" id="finalOrderId">----</div>
-            <p style="font-size:12px; color: var(--danger); margin-bottom:20px;">انسخ الرقم ده عشان تتابع بيه</p>
-            <button class="submit-btn" onclick="copyAndRedirect()">نسخ الرقم والذهاب للتتبع</button>
+    <div class="modal-overlay" id="success_modal">
+        <div class="modal-card">
+            <i class="fas fa-stars" style="font-size: 50px; color: var(--primary);"></i>
+            <h2>تم بنجاح يا وحش!</h2>
+            <p style="color:var(--text-dim); margin-top:10px;">رقم دورك المميز هو:</p>
+            <div class="order-id-display" id="display_id">0000</div>
+            <p style="font-size: 11px; color: #ef4444; margin-bottom: 20px;">* صور الشاشة أو انسخ الرقم للمتابعة</p>
+            <button class="submit-btn" onclick="copyAndClose()">نسخ الرقم والمتابعة</button>
         </div>
     </div>
 
     <script>
-        // 1. تبديل عرض لوحة فودافون كاش
-        function handlePaymentView() {
-            const method = document.getElementById('node_method').value;
-            const panel = document.getElementById('vodaPanel');
-            panel.style.display = (method === 'voda') ? 'block' : 'none';
+        function togglePayment() {
+            const m = document.getElementById('in_method').value;
+            document.getElementById('voda_panel').style.display = (m === 'voda') ? 'block' : 'none';
         }
 
-        // 2. معالجة الحجز
-        async function executeBooking() {
-            const btnText = document.getElementById('btnText');
-            const btnLoader = document.getElementById('btnLoader');
-            
-            // سحب البيانات من الخانات
-            const fields = {
-                name: document.getElementById('node_name').value.trim(),
-                school: document.getElementById('node_school').value.trim(),
-                class: document.getElementById('node_class').value.trim(),
-                email: document.getElementById('node_email').value.trim(),
-                pcode: document.getElementById('node_pcode').value.trim(),
-                ppass: document.getElementById('node_ppass').value.trim(),
-                method: document.getElementById('node_method').value,
-                pay_ph: document.getElementById('node_pay_ph').value.trim(),
-                pay_time: document.getElementById('node_pay_time').value.trim()
+        function submitBooking() {
+            const data = {
+                name: document.getElementById('in_name').value.trim(),
+                school: document.getElementById('in_school').value.trim(),
+                class: document.getElementById('in_class').value.trim(),
+                email: document.getElementById('in_email').value.trim(),
+                pcode: document.getElementById('in_pcode').value.trim(),
+                ppass: document.getElementById('in_ppass').value.trim(),
+                method: document.getElementById('in_method').value,
+                pay_ph: document.getElementById('in_pay_ph').value.trim(),
+                pay_time: document.getElementById('in_pay_time').value.trim(),
+                status: 'تم الاستلام',
+                pay_status: 'لم يدفع',
+                id: Math.floor(1000 + Math.random() * 9000),
+                date: new Date().toLocaleString('ar-EG')
             };
 
-            // التحقق من البيانات الأساسية
-            if (!fields.name || !fields.email || !fields.method || !fields.pcode) {
-                alert("برجاء إكمال البيانات الأساسية أولاً");
+            if(!data.name || !data.email || !data.pcode || !data.method) {
+                alert("املى كل البيانات يا بطل!");
                 return;
             }
 
-            // فحص تكرار الإيميل في LocalStorage
-            let database = JSON.parse(localStorage.getItem('samo_db') || '[]');
-            const duplicate = database.some(user => user.email.toLowerCase() === fields.email.toLowerCase());
-
-            if (duplicate) {
-                alert("هذا البريد مسجل لدينا بالفعل! استخدم التتبع.");
+            let db = JSON.parse(localStorage.getItem('samo_db') || '[]');
+            if(db.some(x => x.email === data.email)) {
+                alert("الإيميل ده سجل قبل كدة!");
                 return;
             }
 
-            // بدء عملية الحفظ الوهمية (تأثير تحميل)
-            btnText.innerText = "جاري الحفظ...";
-            btnLoader.style.display = "inline-block";
-
-            setTimeout(() => {
-                // توليد رقم دور عشوائي
-                const orderId = Math.floor(1000 + Math.random() * 9000);
-                
-                // إضافة الحالة والتاريخ
-                const finalData = {
-                    ...fields,
-                    id: orderId,
-                    status: 'تم الاستلام',
-                    pay_status: 'قيد المراجعة',
-                    timestamp: new Date().toLocaleString('ar-EG')
-                };
-
-                // حفظ في قاعدة البيانات
-                database.push(finalData);
-                localStorage.setItem('samo_db', JSON.stringify(database));
-
-                // عرض النافذة
-                btnLoader.style.display = "none";
-                btnText.innerText = "تأكيد الحجز الآن";
-                document.getElementById('finalOrderId').innerText = orderId;
-                document.getElementById('successOverlay').style.display = 'flex';
-
-            }, 1500);
+            db.push(data);
+            localStorage.setItem('samo_db', JSON.stringify(db));
+            
+            document.getElementById('display_id').innerText = data.id;
+            document.getElementById('success_modal').style.display = 'flex';
         }
 
-        // 3. نسخ الرقم والتحويل
-        function copyAndRedirect() {
-            const num = document.getElementById('finalOrderId').innerText;
-            navigator.clipboard.writeText(num).then(() => {
-                window.location.href = 'track.html';
-            });
+        function copyAndClose() {
+            const id = document.getElementById('display_id').innerText;
+            navigator.clipboard.writeText(id);
+            window.location.href = 'track.html';
         }
-
-        // ملاحظات برمجية إضافية:
-        // تم استخدام localStorage كقاعدة بيانات مؤقتة.
-        // يمكن تطوير هذا الجزء لربطه بـ Firebase أو Sheets لاحقاً.
     </script>
 </body>
-                                                                           </html>
-                                                                           
+</html>

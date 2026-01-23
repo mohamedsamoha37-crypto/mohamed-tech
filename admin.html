@@ -2,119 +2,45 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samo Admin</title>
+    <title>Samo Admin | الإدارة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #22c55e; --bg: #020617; --card: #0f172a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: white; padding: 20px; }
-        #login { max-width: 400px; margin: 100px auto; background: var(--card); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--primary); }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; }
-        .admin-content { display: none; max-width: 1200px; margin: 0 auto; }
-        .stats { display: flex; gap: 20px; margin-bottom: 20px; }
-        .stat-card { flex: 1; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #334155; text-align: center; }
-        .stat-card h2 { color: var(--primary); }
-        .filter-bar { margin-bottom: 15px; display: flex; gap: 10px; }
-        table { width: 100%; background: var(--card); border-radius: 15px; overflow: hidden; border-collapse: collapse; }
-        th, td { padding: 15px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .badge { padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; }
-        .bg-green { background: rgba(34,197,94,0.2); color: var(--primary); }
-        .bg-red { background: rgba(239,68,68,0.2); color: #ef4444; }
-        .pass-cell { font-family: monospace; filter: blur(4px); cursor: pointer; }
-        .pass-cell:hover { filter: blur(0); }
+        body { background: #020617; color: white; padding: 20px; font-family: sans-serif; }
+        .admin-ui { display: none; max-width: 800px; margin: auto; }
+        .stat-card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #22c55e; margin-bottom: 20px; text-align: center; }
+        table { width: 100%; background: #0f172a; border-radius: 15px; overflow: hidden; }
+        th, td { padding: 15px; border-bottom: 1px solid #1e293b; text-align: center; }
+        .btn-del { color: #ef4444; border: none; background: none; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div id="login">
-    <h2>مدير Samo Solutions</h2>
-    <input type="email" id="admE" placeholder="Email">
-    <input type="password" id="admP" placeholder="Password">
-    <button onclick="login()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:10px; cursor:pointer">دخول</button>
-</div>
-
-<div class="admin-content" id="admin">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1>لوحة التحكم ⚙️</h1>
-        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer">خروج</button>
+    <div id="login" style="text-align:center; margin-top:100px;">
+        <input type="password" id="pass" placeholder="Password" style="padding:10px; border-radius:10px;">
+        <button onclick="checkPass()" style="padding:10px 20px; background:#22c55e; border:none; border-radius:10px; cursor:pointer;">دخول</button>
     </div>
-
-    <div class="stats">
-        <div class="stat-card"><h2 id="tOrder">0</h2><p>طلبات</p></div>
-        <div class="stat-card"><h2 id="tPay" style="color:#facc15">0</h2><p>لم يدفعوا</p></div>
+    <div id="adminArea" class="admin-ui">
+        <h1>لوحة تحكم Samo ⚙️</h1>
+        <div class="stat-card"><h2>إجمالي الأرباح</h2><h1 id="profit">0 ج.م</h1></div>
+        <table>
+            <thead><tr><th>الطالب</th><th>الحالة</th><th>حذف</th></tr></thead>
+            <tbody id="tbody"></tbody>
+        </table>
     </div>
-
-    <div class="filter-bar">
-        <button onclick="render('all')" style="padding:5px 15px; border-radius:8px; border:none; cursor:pointer">الكل</button>
-        <button onclick="render('نقدي')" style="padding:5px 15px; border-radius:8px; border:none; cursor:pointer">كاش</button>
-    </div>
-
-    <table>
-        <thead><tr><th>العميل</th><th>المنصة</th><th>الدفع</th><th>الحالة</th><th>إجراء</th></tr></thead>
-        <tbody id="tbody"></tbody>
-    </table>
-</div>
-
-<script>
-    function login() {
-        if(document.getElementById('admE').value === "mohamedsamoha37@gmail.com" && document.getElementById('admP').value === "Mody1234m@") {
-            document.getElementById('login').style.display='none';
-            document.getElementById('admin').style.display='block';
-            render('all');
-        } else { alert("غلط!"); }
-    }
-
-    function render(filter) {
-        let b = JSON.parse(localStorage.getItem('bookings') || '[]');
-        if(filter !== 'all') b = b.filter(x => x.method === filter);
-        const tbody = document.getElementById('tbody');
-        tbody.innerHTML = '';
-        b.forEach(order => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><b>${order.name}</b><br><small>${order.school} - ${order.class}</small></td>
-                <td><small>كود: ${order.pCode}</small><br><small class="pass-cell">سر: ${order.pPass}</small></td>
-                <td><span class="badge ${order.payStatus==='تم الدفع'?'bg-green':'bg-red'}" onclick="updatePay(${order.id})">${order.payStatus}</span></td>
-                <td><select onchange="updateStatus(${order.id}, this.value)">
-                    <option ${order.status==='تم الاستلام'?'selected':''}>تم الاستلام</option>
-                    <option ${order.status==='مراجعة الدفع'?'selected':''}>مراجعة الدفع</option>
-                    <option ${order.status==='جاري العمل'?'selected':''}>جاري العمل</option>
-                    <option ${order.status==='تم الانتهاء'?'selected':''}>تم الانتهاء</option>
-                </select></td>
-                <td>
-                    <button onclick="sendWA('${order.name}', ${order.id}, '${order.payPh}')" style="color:#25d366; background:none; border:none; cursor:pointer; font-size:18px"><i class="fab fa-whatsapp"></i></button>
-                    <button onclick="del(${order.id})" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-right:10px"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-        document.getElementById('tOrder').innerText = b.length;
-        document.getElementById('tPay').innerText = b.filter(x => x.payStatus !== 'تم الدفع').length;
-    }
-
-    function updatePay(id) {
-        let b = JSON.parse(localStorage.getItem('bookings'));
-        let o = b.find(x => x.id == id);
-        o.payStatus = o.payStatus === 'تم الدفع' ? 'لم يدفع' : 'تم الدفع';
-        localStorage.setItem('bookings', JSON.stringify(b)); render('all');
-    }
-
-    function updateStatus(id, val) {
-        let b = JSON.parse(localStorage.getItem('bookings'));
-        let o = b.find(x => x.id == id);
-        o.status = val;
-        localStorage.setItem('bookings', JSON.stringify(b));
-        if(val === 'تم الانتهاء') alert('عاش! ابعتله واتساب قوله خلصت');
-        render('all');
-    }
-
-    function del(id) { if(confirm('مسح؟')) { let b = JSON.parse(localStorage.getItem('bookings')); b = b.filter(x => x.id != id); localStorage.setItem('bookings', JSON.stringify(b)); render('all'); } }
-
-    function sendWA(name, id, phone) {
-        let p = phone || prompt("دخل رقمه:");
-        if(p) window.open(`https://wa.me/2${p}?text=يا بطل يا ${name} طلبك رقم ${id} خلص! 🚀`);
-    }
-</script>
+    <script>
+        function checkPass() { if(document.getElementById('pass').value === "Mody1234m@") { document.getElementById('login').style.display='none'; document.getElementById('adminArea').style.display='block'; load(); } }
+        function load() {
+            const b = JSON.parse(localStorage.getItem('bookings') || '[]');
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+            let p = 0;
+            b.forEach((item, i) => {
+                if(item.payStatus === 'تم الدفع') p += 50;
+                tbody.innerHTML += `<tr><td>${item.name}</td><td><button onclick="pay(${i})">${item.payStatus}</button></td><td><button class="btn-del" onclick="del(${i})">X</button></td></tr>`;
+            });
+            document.getElementById('profit').innerText = p + " ج.م";
+        }
+        function pay(i) { let b = JSON.parse(localStorage.getItem('bookings')); b[i].payStatus = b[i].payStatus === 'تم الدفع' ? 'لم يدفع' : 'تم الدفع'; localStorage.setItem('bookings', JSON.stringify(b)); load(); }
+        function del(i) { let b = JSON.parse(localStorage.getItem('bookings')); b.splice(i,1); localStorage.setItem('bookings', JSON.stringify(b)); load(); }
+    </script>
 </body>
 </html>

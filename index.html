@@ -3,69 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samo Solutions | حجز احترافي</title>
+    <title>Samo Solutions | نظام الحجز المتكامل</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --primary: #22c55e; --bg: #020617; --card: #0f172a; --text: #ffffff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .server-status { background: rgba(34, 197, 94, 0.1); padding: 8px 15px; border-radius: 20px; font-size: 12px; color: var(--primary); margin-bottom: 20px; border: 1px solid var(--primary); }
-        .dot { height: 8px; width: 8px; background-color: var(--primary); border-radius: 50%; display: inline-block; margin-left: 5px; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
-        input, select { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
-        input:focus { border-color: var(--primary); }
-        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 30px; text-align: center; border: 2px solid var(--primary); animation: pop 0.4s ease; width: 90%; max-width: 350px; }
-        @keyframes pop { from { transform: scale(0.8); } to { transform: scale(1); } }
+        /* 1. إعدادات الألوان والمتغيرات العالمية */
+        :root {
+            --primary-color: #22c55e;
+            --primary-hover: #4ade80;
+            --bg-dark: #020617;
+            --card-bg: #0f172a;
+            --input-bg: #1e293b;
+            --text-white: #ffffff;
+            --text-gray: #94a3b8;
+            --danger: #ef4444;
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+        }
+
+        /* 2. التنسيق العام للجسم */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* 3. حاوية المحتوى الرئيسية */
+        .main-wrapper {
+            width: 100%;
+            max-width: 550px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow);
+            position: relative;
+            animation: slideDown 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 4. الهيدر والشعار */
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-header h1 {
+            font-size: 30px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .form-header p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        /* 5. تنسيق الخانات */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--primary-color);
+            margin-right: 5px;
+            font-weight: 600;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            color: var(--text-gray);
+            font-size: 16px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 45px 14px 15px;
+            background: var(--input-bg);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            background: #111827;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* 6. قسم الدفع المتقدم */
+        #vodaPanel {
+            display: none;
+            background: rgba(34, 197, 94, 0.03);
+            border: 1px dashed var(--primary-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        .voda-notice {
+            background: var(--primary-color);
+            color: #000;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        /* 7. الأزرار */
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.3);
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .footer-link a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .footer-link a:hover {
+            color: var(--primary-color);
+        }
+
+        /* 8. النافذة المنبثقة الاحترافية */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-card {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 35px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+            position: relative;
+            animation: popUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .order-number {
+            font-size: 45px;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin: 20px 0;
+            letter-spacing: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        /* 9. تأثير التحميل Loader */
+        .loader-spinner {
+            display: none;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* تعديلات للموبايل */
+        @media (max-width: 480px) {
+            .main-wrapper { padding: 25px; }
+            .form-header h1 { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
-    <div class="server-status"><span class="dot"></span> النظام يعمل بكفاءة - Samo Solutions</div>
-    <div class="container">
-        <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">حجز مقعدك <i class="fas fa-rocket"></i></h2>
-        <input type="text" id="uName" placeholder="الاسم الكامل">
-        <input type="email" id="uEmail" placeholder="البريد الإلكتروني">
-        <input type="text" id="pCode" placeholder="كود المنصة">
-        <select id="uMethod" onchange="toggleVoda()">
-            <option value="">اختر طريقة الدفع</option>
-            <option value="نقدي">نقدي</option>
-            <option value="فودافون">فودافون كاش</option>
-        </select>
-        <div id="vodaFields" style="display:none; background:#1e293b; padding:15px; border-radius:12px; margin-bottom:15px;">
-            <p style="font-size:12px; color:var(--primary);">حول على: 01060904228</p>
-            <input type="file" id="uScreen" style="margin-top:10px; font-size:10px;">
+
+    <div class="main-wrapper">
+        <div class="form-header">
+            <h1>SAMO SOLUTIONS</h1>
+            <p>سجل بياناتك بدقة لضمان سرعة التنفيذ</p>
         </div>
-        <button class="btn-main" onclick="processBooking()">تأكيد الحجز الآن</button>
-        <div style="margin-top:20px; text-align:center;">
-            <a href="ai-fixer.html" style="color:#3b82f6; text-decoration:none; font-size:13px;"><i class="fas fa-comment-dots"></i> لو عاوز تستفسر عن حاجة (Samo AI)</a>
+
+        <div id="bookingForm">
+            <div class="input-group">
+                <label>الاسم الرباعي</label>
+                <i class="fas fa-user"></i>
+                <input type="text" id="node_name" placeholder="أدخل اسمك بالكامل">
+            </div>
+
+            <div class="input-group">
+                <label>المدرسة</label>
+                <i class="fas fa-school"></i>
+                <input type="text" id="node_school" placeholder="اسم مدرستك">
+            </div>
+
+            <div class="input-group">
+                <label>الفصل</label>
+                <i class="fas fa-users"></i>
+                <input type="text" id="node_class" placeholder="مثال: 2/1">
+            </div>
+
+            <div class="input-group">
+                <label>البريد الإلكتروني</label>
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="node_email" placeholder="example@mail.com">
+            </div>
+
+            <div class="input-group">
+                <label>كود المنصة</label>
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="node_pcode" placeholder="أدخل كود الطالب">
+            </div>
+
+            <div class="input-group">
+                <label>كلمة سر المنصة</label>
+                <i class="fas fa-lock"></i>
+                <input type="text" id="node_ppass" placeholder="كلمة المرور">
+            </div>
+
+            <div class="input-group">
+                <label>وسيلة الدفع</label>
+                <i class="fas fa-wallet"></i>
+                <select id="node_method" onchange="handlePaymentView()">
+                    <option value="">-- اختر الوسيلة --</option>
+                    <option value="cash">نقدي (يد بيد)</option>
+                    <option value="voda">فودافون كاش (محفظة)</option>
+                </select>
+            </div>
+
+            <div id="vodaPanel">
+                <div class="voda-notice">التحويل لرقـم: 01060904228</div>
+                <div class="input-group">
+                    <label>الرقم المحول منه</label>
+                    <input type="text" id="node_pay_ph" placeholder="01xxxxxxxxx">
+                </div>
+                <div class="input-group">
+                    <label>توقيت العملية</label>
+                    <input type="text" id="node_pay_time" placeholder="الساعة والدقيقة">
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="executeBooking()">
+                <span id="btnText">تأكيد الحجز الآن</span>
+                <div id="btnLoader" class="loader-spinner"></div>
+                <i class="fas fa-paper-plane"></i>
+            </button>
+
+            <div class="footer-link">
+                <a href="track.html">لديك حجز بالفعل؟ تتبع حالته من هنا</a>
+            </div>
         </div>
     </div>
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <i class="fas fa-check-circle" style="font-size:50px; color:var(--primary);"></i>
-            <h2 style="margin:15px 0;">تم الحجز يا وحش!</h2>
-            <p>رقم دورك:</p>
-            <h1 id="orderIdDisplay" style="color:var(--primary); margin:10px 0; letter-spacing:5px;"></h1>
-            <button class="btn-main" onclick="copyAndGo()">نسخ الرقم ومتابعة</button>
+
+    <div class="overlay" id="successOverlay">
+        <div class="success-card">
+            <i class="fas fa-check-circle" style="font-size: 70px; color: var(--primary-color);"></i>
+            <h2 style="margin-top:20px;">ممتاز يا بطل!</h2>
+            <p style="color: var(--text-gray); margin-top:10px;">تم تسجيل حجزك في قاعدة بيانات سيمو</p>
+            <div class="order-number" id="finalOrderId">----</div>
+            <p style="font-size:12px; color: var(--danger); margin-bottom:20px;">انسخ الرقم ده عشان تتابع بيه</p>
+            <button class="submit-btn" onclick="copyAndRedirect()">نسخ الرقم والذهاب للتتبع</button>
         </div>
     </div>
+
     <script>
-        function toggleVoda() { document.getElementById('vodaFields').style.display = document.getElementById('uMethod').value === 'فودافون' ? 'block' : 'none'; }
-        function processBooking() {
-            const name = document.getElementById('uName').value;
-            const email = document.getElementById('uEmail').value;
-            if(!name || !email) return alert("كمل بياناتك!");
-            let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-            if(bookings.some(b => b.email === email)) return alert("الإيميل ده محجوز قبل كدة!");
-            const id = Math.floor(1000 + Math.random() * 9000);
-            bookings.push({ id, name, email, method: document.getElementById('uMethod').value, status: 'تم الاستلام', payStatus: 'لم يدفع' });
-            localStorage.setItem('bookings', JSON.stringify(bookings));
-            document.getElementById('orderIdDisplay').innerText = id;
-            document.getElementById('successModal').style.display = 'flex';
+        // 1. تبديل عرض لوحة فودافون كاش
+        function handlePaymentView() {
+            const method = document.getElementById('node_method').value;
+            const panel = document.getElementById('vodaPanel');
+            panel.style.display = (method === 'voda') ? 'block' : 'none';
         }
-        function copyAndGo() { navigator.clipboard.writeText(document.getElementById('orderIdDisplay').innerText); window.location.href = 'track.html'; }
+
+        // 2. معالجة الحجز
+        async function executeBooking() {
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            
+            // سحب البيانات من الخانات
+            const fields = {
+                name: document.getElementById('node_name').value.trim(),
+                school: document.getElementById('node_school').value.trim(),
+                class: document.getElementById('node_class').value.trim(),
+                email: document.getElementById('node_email').value.trim(),
+                pcode: document.getElementById('node_pcode').value.trim(),
+                ppass: document.getElementById('node_ppass').value.trim(),
+                method: document.getElementById('node_method').value,
+                pay_ph: document.getElementById('node_pay_ph').value.trim(),
+                pay_time: document.getElementById('node_pay_time').value.trim()
+            };
+
+            // التحقق من البيانات الأساسية
+            if (!fields.name || !fields.email || !fields.method || !fields.pcode) {
+                alert("برجاء إكمال البيانات الأساسية أولاً");
+                return;
+            }
+
+            // فحص تكرار الإيميل في LocalStorage
+            let database = JSON.parse(localStorage.getItem('samo_db') || '[]');
+            const duplicate = database.some(user => user.email.toLowerCase() === fields.email.toLowerCase());
+
+            if (duplicate) {
+                alert("هذا البريد مسجل لدينا بالفعل! استخدم التتبع.");
+                return;
+            }
+
+            // بدء عملية الحفظ الوهمية (تأثير تحميل)
+            btnText.innerText = "جاري الحفظ...";
+            btnLoader.style.display = "inline-block";
+
+            setTimeout(() => {
+                // توليد رقم دور عشوائي
+                const orderId = Math.floor(1000 + Math.random() * 9000);
+                
+                // إضافة الحالة والتاريخ
+                const finalData = {
+                    ...fields,
+                    id: orderId,
+                    status: 'تم الاستلام',
+                    pay_status: 'قيد المراجعة',
+                    timestamp: new Date().toLocaleString('ar-EG')
+                };
+
+                // حفظ في قاعدة البيانات
+                database.push(finalData);
+                localStorage.setItem('samo_db', JSON.stringify(database));
+
+                // عرض النافذة
+                btnLoader.style.display = "none";
+                btnText.innerText = "تأكيد الحجز الآن";
+                document.getElementById('finalOrderId').innerText = orderId;
+                document.getElementById('successOverlay').style.display = 'flex';
+
+            }, 1500);
+        }
+
+        // 3. نسخ الرقم والتحويل
+        function copyAndRedirect() {
+            const num = document.getElementById('finalOrderId').innerText;
+            navigator.clipboard.writeText(num).then(() => {
+                window.location.href = 'track.html';
+            });
+        }
+
+        // ملاحظات برمجية إضافية:
+        // تم استخدام localStorage كقاعدة بيانات مؤقتة.
+        // يمكن تطوير هذا الجزء لربطه بـ Firebase أو Sheets لاحقاً.
     </script>
 </body>
-</html>
+                                                                           </html>
+                                                                           
